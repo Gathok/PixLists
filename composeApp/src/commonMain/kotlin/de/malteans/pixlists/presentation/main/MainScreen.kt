@@ -1,5 +1,6 @@
 package de.malteans.pixlists.presentation.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,9 +18,8 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -56,7 +56,6 @@ fun MainScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
 
     var showNewListDialog by remember { mutableStateOf(false) }
-
     var showDeleteListDialog by remember { mutableStateOf(false) }
     var listToDelete by remember { mutableStateOf<PixList?>(null) }
 
@@ -64,14 +63,14 @@ fun MainScreen(
         NewListDialog(
             onDismiss = { showNewListDialog = false },
             onAdd = { name ->
-                val newId = viewModel.createPixList(name.trim())
-                showNewListDialog = false
-                viewModel.setCurScreen(Screen.LIST)
-                viewModel.setCurPixListId(newId)
-                navController.navigate(Route.LoadingScreen)
                 scope.launch {
+                    showNewListDialog = false
+                    viewModel.setCurScreen(Screen.LIST)
+                    navController.navigate(Route.LoadingScreen)
+                    val id = viewModel.createPixList(name.trim())
+                    viewModel.setCurPixListId(id)
                     drawerState.close()
-                    navController.navigate(Route.ListScreen(newId))
+                    navController.navigate(Route.ListScreen(id))
                 }
             },
             invalidNames = state.allPixLists.map { it.name },
@@ -89,75 +88,55 @@ fun MainScreen(
                 )
             },
             leftIcon = {
-                IconButton (
-                    onClick = {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Close",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clickable {
+                        if (listToDelete!!.id == state.curPixListId) {
+                            navController.navigate(Route.ListScreen(listToDelete!!.id))
+                        }
                         showDeleteListDialog = false
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Close",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+                )
             },
             rightIcon = {
-                TextButton(
-                    onClick = {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Yes",
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.clickable {
                         viewModel.deletePixListById(listToDelete!!.id)
+                        if (listToDelete!!.id == state.curPixListId) {
+                            viewModel.setCurPixListId(null)
+                        }
                         showDeleteListDialog = false
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Yes",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
+                )
             },
         ) {
             Text(
                 text = "Sure you want to delete ${listToDelete!!.name}?",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .padding(top = 16.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
         }
     }
 
     var showHiddenLists by remember { mutableStateOf(false) }
 
-    Surface(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
     ) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
                 ModalDrawerSheet {
                     Spacer(modifier = Modifier.height(8.dp))
-                    NavListHeader(onLongClick = {
-                        showHiddenLists = !showHiddenLists
-                        /*
-                        Toast.makeText(
-                        context,
-                        if (showHiddenLists) SHOW_HIDDEN_LISTS else HIDE_HIDDEN_LISTS,
-                        Toast.LENGTH_SHORT
-                        ).show()
-                        // Vibrate
-                        (getSystemService(context, Vibrator::class.java) as Vibrator)
-                        .vibrate(
-                        VibrationEffect
-                        .createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
-                        )
-                        */
-                    })
+                    NavListHeader(onLongClick = { showHiddenLists = !showHiddenLists })
                     Spacer(modifier = Modifier.height(12.dp))
-                    LazyColumn (
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
+                    LazyColumn(modifier = Modifier.weight(1f)) {
                         items(state.allPixLists) { curPixList ->
                             if (!(curPixList.name.matches(Regex("^\\(.*\\)$")) && !showHiddenLists)) {
                                 NavigationDrawerItem(
@@ -172,15 +151,13 @@ fun MainScreen(
                                             navController.navigate(Route.ListScreen(curPixList.id))
                                         }
                                     },
-                                    modifier = Modifier
-                                        .padding(NavigationDrawerItemDefaults.ItemPadding),
+                                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                                     icon = {
                                         Icon(
-                                            imageVector = if (curPixList.id == state.curPixListId) {
+                                            imageVector = if (curPixList.id == state.curPixListId)
                                                 FilledPixListIcon
-                                            } else {
-                                                OutlinedPixListIcon
-                                            },
+                                            else
+                                                OutlinedPixListIcon,
                                             contentDescription = "PixList"
                                         )
                                     },
@@ -188,8 +165,9 @@ fun MainScreen(
                                         IconButton(
                                             onClick = {
                                                 listToDelete = curPixList
-                                                viewModel.setCurPixListId(null)
-                                                viewModel.setCurScreen(Screen.LIST)
+                                                if (curPixList.id == state.curPixListId) {
+                                                    navController.navigate(Route.ListScreen(null))
+                                                }
                                                 showDeleteListDialog = true
                                             }
                                         ) {
@@ -207,11 +185,9 @@ fun MainScreen(
                                 label = { Text("New PixList") },
                                 onClick = {
                                     showNewListDialog = true
-                                    viewModel.setCurPixListId(null)
                                 },
                                 selected = false,
-                                modifier = Modifier
-                                    .padding(NavigationDrawerItemDefaults.ItemPadding),
+                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                                 icon = {
                                     Icon(
                                         imageVector = AddPixListIcon,
@@ -227,13 +203,10 @@ fun MainScreen(
                             navController.navigate(Route.ManageColorsScreen)
                             viewModel.setCurPixListId(null)
                             viewModel.setCurScreen(Screen.MANAGE_COLORS)
-                            scope.launch {
-                                drawerState.close()
-                            }
+                            scope.launch { drawerState.close() }
                         },
                         selected = state.curScreen == Screen.MANAGE_COLORS,
-                        modifier = Modifier
-                            .padding(NavigationDrawerItemDefaults.ItemPadding),
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         icon = {
                             if (state.curScreen == Screen.MANAGE_COLORS) {
                                 Icon(
@@ -249,10 +222,11 @@ fun MainScreen(
                         }
                     )
                 }
-            }
+            },
         ) {
             NavGraph(
-                navController = navController, openDrawer = { scope.launch { drawerState.open() } }
+                navController = navController,
+                openDrawer = { scope.launch { drawerState.open() } }
             )
         }
     }

@@ -72,10 +72,10 @@ fun RenamePixListDialog(
             )
         }
     ) {
-        var isError by remember { mutableStateOf(invalideNames.contains(name) xor (name == curName)) }
+        var isError by remember { mutableStateOf(invalideNames.contains(name)) }
 
         LaunchedEffect(name) {
-            isError = invalideNames.contains(name) xor (name == curName)
+            isError = invalideNames.contains(name)
         }
 
         Spacer(modifier = Modifier.height(16.dp))

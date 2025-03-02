@@ -30,12 +30,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.malteans.pixlists.domain.PixCategory
 import de.malteans.pixlists.presentation.components.CustomTopBar
-import de.malteans.pixlists.presentation.list.components.CategoryDialog
-import de.malteans.pixlists.presentation.list.components.EntryDialog
-import de.malteans.pixlists.presentation.list.components.RenamePixListDialog
 import de.malteans.pixlists.presentation.components.customIcons.AddCategoryIcon
 import de.malteans.pixlists.presentation.components.customIcons.FilledPixIcon
 import de.malteans.pixlists.presentation.components.customIcons.OutlinedPixIcon
+import de.malteans.pixlists.presentation.list.components.CategoryDialog
+import de.malteans.pixlists.presentation.list.components.EntryDialog
+import de.malteans.pixlists.presentation.list.components.RenamePixListDialog
 import de.malteans.pixlists.util.Months
 import de.malteans.pixlists.util.PixDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi

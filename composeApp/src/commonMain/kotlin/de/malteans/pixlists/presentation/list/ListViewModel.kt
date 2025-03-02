@@ -36,13 +36,13 @@ class ListViewModel(
 
     val state = combine(
         _state,
-        _curPixList
+        _curPixList,
     ) { state, curPixList ->
         ListState(
             curPixList = curPixList,
             curCategories = curPixList?.categories ?: emptyList(),
             colorList = state.colorList,
-            invalideNames = state.invalideNames
+            invalideNames = state.invalideNames.filter { it != curPixList?.name },
         )
     }.stateIn(
         scope = viewModelScope,
@@ -64,6 +64,9 @@ class ListViewModel(
     fun updatePixListName(newName: String) {
         viewModelScope.launch {
             repository.renameList(_curPixListId.value!!, newName)
+            _state.value = _state.value.copy(
+                invalideNames = repository.getAllPixLists().first().map { it.name },
+            )
         }
     }
 

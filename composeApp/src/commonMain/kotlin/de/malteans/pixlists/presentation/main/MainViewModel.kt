@@ -33,12 +33,8 @@ class MainViewModel(
         initialValue = MainState()
     )
 
-    fun createPixList(name: String): Long {
-        var id = 0L
-        viewModelScope.launch {
-            id = repository.createList(name)
-        }
-        return id // FIXME: DAS FUNKTIONIERT WAHRSCHEINLICH NICHT
+    suspend fun createPixList(name: String): Long {
+        return repository.createList(name)
     }
 
     fun deletePixListById(id: Long) {
