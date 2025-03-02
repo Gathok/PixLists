@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -33,24 +32,17 @@ class ListViewModel(
             else flowOf(null)
         }
 
-    private val _colorList = repository
-        .getAllColors()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = emptyList()
-        )
-
     private val _state = MutableStateFlow(ListState())
 
     val state = combine(
-        _curPixList,
-        _colorList.onStart { emit(emptyList()) }
-    ) { curPixList, colors ->
+        _state,
+        _curPixList
+    ) { state, curPixList ->
         ListState(
             curPixList = curPixList,
             curCategories = curPixList?.categories ?: emptyList(),
-            colorList = colors,
+            colorList = state.colorList,
+            invalideNames = state.invalideNames
         )
     }.stateIn(
         scope = viewModelScope,
@@ -63,7 +55,8 @@ class ListViewModel(
 
         viewModelScope.launch {
             _state.value = _state.value.copy(
-                invalideNames = repository.getAllPixLists().first().map { it.name }
+                invalideNames = repository.getAllPixLists().first().map { it.name },
+                colorList = repository.getAllColors().first()
             )
         }
     }

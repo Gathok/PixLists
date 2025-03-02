@@ -26,10 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.malteans.pixlists.domain.PixColor
-import de.malteans.pixlists.presentation.manageColors.util.ColorItem
-import de.malteans.pixlists.presentation.util.CustomTopBar
-import de.malteans.pixlists.presentation.util.customDialogs.ColorDialog
-import de.malteans.pixlists.presentation.util.customDialogs.CustomDialog
+import de.malteans.pixlists.presentation.manageColors.components.ColorItem
+import de.malteans.pixlists.presentation.components.CustomTopBar
+import de.malteans.pixlists.presentation.manageColors.components.ColorDialog
+import de.malteans.pixlists.presentation.components.CustomDialog
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
