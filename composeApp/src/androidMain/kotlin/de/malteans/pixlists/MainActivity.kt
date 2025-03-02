@@ -3,8 +3,6 @@ package de.malteans.pixlists
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import de.malteans.pixlists.app.App
 
 class MainActivity : ComponentActivity() {
@@ -15,10 +13,4 @@ class MainActivity : ComponentActivity() {
             App()
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }

@@ -1,6 +1,6 @@
 package de.malteans.pixlists.di
 
-import de.malteans.pixlists.list.data.database.DatabaseFactory
+import de.malteans.pixlists.data.database.DatabaseFactory
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

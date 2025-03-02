@@ -1,5 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -15,7 +13,6 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -35,7 +32,7 @@ kotlin {
     room {
         schemaDirectory("$projectDir/schemas")
     }
-    
+
     sourceSets {
         
         androidMain.dependencies {
@@ -65,7 +62,14 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
 
-            implementation(libs.androidx.material)
+            // Datetime
+            implementation(libs.kotlinx.datetime)
+
+            // Material 3
+            implementation(compose.material3)
+
+            // More Icons
+            implementation(libs.androidx.material.icons.extended.android)
         }
 
         dependencies {
@@ -82,8 +86,8 @@ android {
         applicationId = "de.malteans.pixlists"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3412100
+        versionName = "1.0-pre0"
     }
     packaging {
         resources {
