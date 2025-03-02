@@ -55,9 +55,6 @@ fun MainScreen(
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
 
-    val selectedScreen = remember { mutableStateOf(Screen.LIST) }
-    val selectedPixListId = remember { mutableStateOf<Long?>(null) }
-
     var showNewListDialog by remember { mutableStateOf(false) }
 
     var showDeleteListDialog by remember { mutableStateOf(false) }
@@ -69,8 +66,8 @@ fun MainScreen(
             onAdd = { name ->
                 val newId = viewModel.createPixList(name.trim())
                 showNewListDialog = false
-                selectedScreen.value = Screen.LIST
-                selectedPixListId.value = newId
+                viewModel.setCurScreen(Screen.LIST)
+                viewModel.setCurPixListId(newId)
                 navController.navigate(Route.LoadingScreen)
                 scope.launch {
                     drawerState.close()
@@ -165,10 +162,10 @@ fun MainScreen(
                             if (!(curPixList.name.matches(Regex("^\\(.*\\)$")) && !showHiddenLists)) {
                                 NavigationDrawerItem(
                                     label = { Text(curPixList.name) },
-                                    selected = curPixList.id == selectedPixListId.value,
+                                    selected = curPixList.id == state.curPixListId,
                                     onClick = {
-                                        selectedPixListId.value = curPixList.id
-                                        selectedScreen.value = Screen.LIST
+                                        viewModel.setCurScreen(Screen.LIST)
+                                        viewModel.setCurPixListId(curPixList.id)
                                         scope.launch {
                                             navController.navigate(Route.LoadingScreen)
                                             drawerState.close()
@@ -179,7 +176,7 @@ fun MainScreen(
                                         .padding(NavigationDrawerItemDefaults.ItemPadding),
                                     icon = {
                                         Icon(
-                                            imageVector = if (curPixList.id == selectedPixListId.value) {
+                                            imageVector = if (curPixList.id == state.curPixListId) {
                                                 FilledPixListIcon
                                             } else {
                                                 OutlinedPixListIcon
@@ -191,8 +188,8 @@ fun MainScreen(
                                         IconButton(
                                             onClick = {
                                                 listToDelete = curPixList
-                                                selectedPixListId.value = null
-                                                selectedScreen.value = Screen.LIST
+                                                viewModel.setCurPixListId(null)
+                                                viewModel.setCurScreen(Screen.LIST)
                                                 showDeleteListDialog = true
                                             }
                                         ) {
@@ -210,7 +207,7 @@ fun MainScreen(
                                 label = { Text("New PixList") },
                                 onClick = {
                                     showNewListDialog = true
-                                    selectedPixListId.value = null
+                                    viewModel.setCurPixListId(null)
                                 },
                                 selected = false,
                                 modifier = Modifier
@@ -228,17 +225,17 @@ fun MainScreen(
                         label = { Text("Manage colors") },
                         onClick = {
                             navController.navigate(Route.ManageColorsScreen)
-                            selectedPixListId.value = null
-                            selectedScreen.value = Screen.MANAGE_COLORS
+                            viewModel.setCurPixListId(null)
+                            viewModel.setCurScreen(Screen.MANAGE_COLORS)
                             scope.launch {
                                 drawerState.close()
                             }
                         },
-                        selected = selectedScreen.value == Screen.MANAGE_COLORS,
+                        selected = state.curScreen == Screen.MANAGE_COLORS,
                         modifier = Modifier
                             .padding(NavigationDrawerItemDefaults.ItemPadding),
                         icon = {
-                            if (selectedScreen.value == Screen.MANAGE_COLORS) {
+                            if (state.curScreen == Screen.MANAGE_COLORS) {
                                 Icon(
                                     imageVector = FilledManageColor,
                                     contentDescription = "Manage Colors"

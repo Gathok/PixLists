@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.malteans.pixlists.domain.PixCategory
 import de.malteans.pixlists.domain.PixColor
+import de.malteans.pixlists.presentation.util.Dropdown
 import de.malteans.pixlists.presentation.util.customIcons.FilledPixIcon
 
 // NewCategoryDialog ----------------------------------------------------------------

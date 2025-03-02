@@ -13,8 +13,6 @@ actual class DatabaseFactory(
         return Room.databaseBuilder<PixDatabase>(
             context = appContext,
             name = dbFile.absolutePath
-
-
         )
     }
 }

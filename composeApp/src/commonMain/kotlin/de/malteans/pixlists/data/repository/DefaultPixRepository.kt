@@ -8,12 +8,12 @@ import de.malteans.pixlists.data.database.entities.PixListEntity
 import de.malteans.pixlists.data.mappers.toPixCategory
 import de.malteans.pixlists.data.mappers.toPixColor
 import de.malteans.pixlists.data.mappers.toPixList
-import de.malteans.pixlists.domain.PixCategory
 import de.malteans.pixlists.domain.PixColor
 import de.malteans.pixlists.domain.PixList
 import de.malteans.pixlists.domain.PixRepository
 import de.malteans.pixlists.util.PixDate
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -42,13 +42,26 @@ class DefaultPixRepository(
     override fun getAllPixLists(): Flow<List<PixList>> {
         return dao.getAllLists().map { allLists ->
             allLists.map { listEntity ->
-                val allColors = dao.getAllColors().first().associate { it.id to it.toPixColor() }
-                val categories = dao.getCategoriesForList(listEntity.id).first().associate { category ->
-                    category.id to category.toPixCategory(allColors[category.colorId])
-                }
-                val entries = dao.getEntriesForList(listEntity.id).first().associate { PixDate.fromString(it.date) to categories[it.categoryId]!! }
-                listEntity.toPixList(categories.values.toList(), entries)
+                listEntity.toPixList()
             }
+        }
+    }
+
+    override fun getCurrentPixList(listId: Long): Flow<PixList> {
+        return combine(
+            dao.getList(listId),
+            dao.getAllColors(),
+            dao.getCategoriesForList(listId),
+            dao.getEntriesForList(listId)
+        ) { listEntity, colors, categories, entries ->
+            val colorsMap = colors.associate { it.id to it.toPixColor() }
+            val mappedCategories = categories.associate { categoryEntity ->
+                categoryEntity.id to categoryEntity.toPixCategory(colorsMap[categoryEntity.colorId])
+            }
+            val mappedEntries = entries.associate { entryEntity ->
+                PixDate.fromString(entryEntity.date) to mappedCategories[entryEntity.categoryId]
+            }
+            listEntity.toPixList(mappedCategories.values.toList(), mappedEntries)
         }
     }
 
@@ -81,15 +94,6 @@ class DefaultPixRepository(
         val categoryEntity = dao.getCategory(categoryId).first()
         val updated = categoryEntity.copy(colorId = newColorId)
         dao.upsertCategory(updated)
-    }
-
-    override fun getCategoriesForList(listId: Long): Flow<List<PixCategory>> {
-        return dao.getCategoriesForList(listId).map { list ->
-            list.map { it.toPixCategory(
-                if (it.colorId != null) dao.getColor(it.colorId).first().toPixColor()
-                else null
-            ) }
-        }
     }
 
     override suspend fun changeCategoriesOrder(listId: Long, newOrderByIds: List<Long>) {
@@ -148,13 +152,5 @@ class DefaultPixRepository(
         val entry = entries.firstOrNull { it.date == date.toString() }
             ?: throw IllegalArgumentException("Entry for date $date not found in list $listId")
         dao.deleteEntry(entry)
-    }
-
-    override suspend fun changeEntryCategory(listId: Long, date: PixDate, newCategoryId: Long) {
-        val entries = dao.getEntriesForList(listId).first()
-        val entry = entries.firstOrNull { it.date == date.toString() }
-            ?: throw IllegalArgumentException("Entry for date $date not found in list $listId")
-        val updated = entry.copy(categoryId = newCategoryId)
-        dao.upsertEntry(updated)
     }
 }

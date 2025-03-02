@@ -1,10 +1,11 @@
-package de.malteans.pixlists.presentation.util.customDialogs
+package de.malteans.pixlists.presentation.util
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -26,23 +27,16 @@ fun Dropdown(
     optionIcon: @Composable ((Any?) -> Unit)? = null,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var currentInput by remember { mutableStateOf(selectedOption.second) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = {
-            expanded = !expanded
-            if (expanded)
-                currentInput = ""
-        },
+        onExpandedChange = { expanded = it },
         modifier = modifier
     ) {
         OutlinedTextField(
-            readOnly = !expanded,
-            value = if (expanded) currentInput else selectedOption.second,
-            onValueChange = {
-                currentInput = it
-            },
+            readOnly = true,
+            value = selectedOption.second,
+            onValueChange = { },
             leadingIcon = if (optionIcon != null) { { optionIcon(selectedOption.first) } }
                 else null,
             trailingIcon = {
@@ -51,7 +45,7 @@ fun Dropdown(
             label = { Text(label) },
             colors = OutlinedTextFieldDefaults.colors(),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
                 .fillMaxWidth(),
             singleLine = true,
         )
@@ -62,18 +56,15 @@ fun Dropdown(
         ) {
             options.toList().forEach { pair ->
                 val (option, text) = pair
-                if (text.contains(currentInput, ignoreCase = true)) {
-                    DropdownMenuItem(
-                        text = { Text(text = text) },
-                        onClick = {
-                            expanded = false
-                            currentInput = text
-                            onValueChanged(option)
-                        },
-                        leadingIcon = if (optionIcon != null) { { optionIcon(option) } }
-                            else null
-                    )
-                }
+                DropdownMenuItem(
+                    text = { Text(text = text) },
+                    onClick = {
+                        expanded = false
+                        onValueChanged(option)
+                    },
+                    leadingIcon = if (optionIcon != null) { { optionIcon(option) } }
+                        else null
+                )
             }
         }
     }

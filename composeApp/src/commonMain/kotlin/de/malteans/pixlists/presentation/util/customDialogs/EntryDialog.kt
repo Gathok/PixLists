@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,8 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import de.malteans.pixlists.domain.PixCategory
+import de.malteans.pixlists.presentation.util.Dropdown
 import de.malteans.pixlists.presentation.util.customIcons.FilledPixIcon
+import de.malteans.pixlists.presentation.util.customIcons.OutlinedPixIcon
 import de.malteans.pixlists.util.Months
+import de.malteans.pixlists.util.isValidDate
 import de.malteans.pixlists.util.toStringDate
 import kotlinx.datetime.Clock
 
@@ -37,7 +41,7 @@ fun EntryDialog(
     onDismiss: () -> Unit,
     onEdit: (Int, Months, PixCategory?) -> Unit,
     startDate: Long = Clock.System.now().toEpochMilliseconds(),
-    curCategory: PixCategory = categories.first(),
+    curCategory: PixCategory? = null,
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -48,6 +52,12 @@ fun EntryDialog(
     ) {
         var selectedDate by remember { mutableStateOf(startDate.toStringDate()) }
         var selectedCategory by remember { mutableStateOf(curCategory) }
+
+        var ready by remember { mutableStateOf(false) }
+
+        LaunchedEffect(selectedDate, selectedCategory) {
+            ready = selectedDate.isValidDate() && selectedCategory != null
+        }
 
         CustomDialog(
             onDismissRequest = onDismiss,
@@ -71,11 +81,14 @@ fun EntryDialog(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Edit Date",
-                        tint = MaterialTheme.colorScheme.onSurface,
+                        tint = if (ready) MaterialTheme.colorScheme.onSurface
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                         modifier = Modifier.clickable {
-                            val day = selectedDate.split(".")[0].toInt()
-                            val month = Months.getByIndex(selectedDate.split(".")[1].toInt())
-                            onEdit(day, month, null)
+                            if (ready) {
+                                val day = selectedDate.split(".")[0].toInt()
+                                val month = Months.getByIndex(selectedDate.split(".")[1].toInt())
+                                onEdit(day, month, null)
+                            }
                         }
                     )
                 }
@@ -84,17 +97,13 @@ fun EntryDialog(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Add",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (ready) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                     modifier = Modifier.clickable {
-                        try {
+                        if (ready) {
                             val day = selectedDate.split(".")[0].toInt()
                             val month = Months.getByIndex(selectedDate.split(".")[1].toInt())
-                            if (day !in 1..month.getDaysCount) {
-                                throw IllegalArgumentException("Invalid day")
-                            }
                             onEdit(day, month, selectedCategory)
-                        } catch (e: Exception) {
-
                         }
                     }
                 )
@@ -126,15 +135,23 @@ fun EntryDialog(
                     options = categories.associateBy({ it }, { it.name }),
                     label = "Category",
                     onValueChanged = { selectedCategory = it as PixCategory },
-                    selectedOption = Pair(selectedCategory, selectedCategory.name),
+                    selectedOption = Pair(selectedCategory, selectedCategory?.name ?: ""),
                     optionIcon = { category ->
                         if (category != null) {
                             category as PixCategory
-                            Icon(
-                                imageVector = FilledPixIcon,
-                                contentDescription = "Color",
-                                tint = category.color!!.toColor(),
-                            )
+                            if (category.color != null) {
+                                Icon(
+                                    imageVector = FilledPixIcon,
+                                    contentDescription = "Color",
+                                    tint = category.color.toColor(),
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = OutlinedPixIcon,
+                                    contentDescription = "Color",
+                                    tint = MaterialTheme.colorScheme.error,
+                                )
+                            }
                         }
                     }
                 )

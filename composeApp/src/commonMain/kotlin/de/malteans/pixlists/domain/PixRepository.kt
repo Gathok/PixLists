@@ -14,6 +14,8 @@ interface PixRepository {
 
     fun getAllPixLists(): Flow<List<PixList>>
 
+    fun getCurrentPixList(listId: Long): Flow<PixList>
+
     // Category Operations ----------------------------------------------
     suspend fun createCategory(listId: Long, colorId: Long, name: String): Long
 
@@ -22,8 +24,6 @@ interface PixRepository {
     suspend fun renameCategory(categoryId: Long, newName: String)
 
     suspend fun changeCategoryColor(categoryId: Long, newColorId: Long)
-
-    fun getCategoriesForList(listId: Long): Flow<List<PixCategory>>
 
     suspend fun changeCategoriesOrder(listId: Long, newOrderByIds: List<Long>)
 
@@ -42,6 +42,4 @@ interface PixRepository {
     suspend fun createEntry(listId: Long, categoryId: Long, date: PixDate): Long
 
     suspend fun deleteEntry(listId: Long, date: PixDate)
-
-    suspend fun changeEntryCategory(listId: Long, date: PixDate, newCategoryId: Long)
 }

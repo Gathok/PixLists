@@ -9,4 +9,5 @@ data class ListState(
     val curPixList: PixList? = null,
     val curCategories: List<PixCategory> = emptyList(),
     val colorList: List<PixColor> = emptyList(),
+    val invalideNames: List<String> = emptyList(),
 )

@@ -6,5 +6,5 @@ data class PixList(
     val id: Long,
     val name: String,
     val categories: List<PixCategory>,
-    val entries: Map<PixDate, PixCategory>,
+    val entries: Map<PixDate, PixCategory?>,
 )

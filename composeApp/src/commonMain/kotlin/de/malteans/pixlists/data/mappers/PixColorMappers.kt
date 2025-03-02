@@ -12,13 +12,3 @@ fun PixColorEntity.toPixColor(): PixColor {
         blue = blue,
     )
 }
-
-fun PixColor.toPixColorEntity(): PixColorEntity {
-    return PixColorEntity(
-        id = id,
-        name = name,
-        red = red,
-        green = green,
-        blue = blue,
-    )
-}

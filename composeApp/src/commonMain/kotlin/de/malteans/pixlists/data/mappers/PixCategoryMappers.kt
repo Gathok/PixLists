@@ -13,13 +13,3 @@ fun PixCategoryEntity.toPixCategory(color: PixColor?) : PixCategory {
         orderIndex = orderIndex,
     )
 }
-
-fun PixCategory.toPixCategoryEntity() : PixCategoryEntity {
-    return PixCategoryEntity(
-        id = id,
-        listId = listId,
-        colorId = color?.id ?: 0L,
-        name = name,
-        orderIndex = orderIndex,
-    )
-}

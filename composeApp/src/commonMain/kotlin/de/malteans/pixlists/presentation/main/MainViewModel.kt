@@ -3,6 +3,7 @@ package de.malteans.pixlists.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.malteans.pixlists.domain.PixRepository
+import de.malteans.pixlists.util.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -13,8 +14,6 @@ class MainViewModel(
     private val repository: PixRepository,
 ): ViewModel() {
 
-    private val _curPixListId: MutableStateFlow<Long?> = MutableStateFlow(null)
-
     private val _allPixLists = repository
         .getAllPixLists()
         .stateIn(
@@ -24,10 +23,9 @@ class MainViewModel(
         )
 
     private val _state = MutableStateFlow(MainState())
-    val state = combine(_state, _curPixListId, _allPixLists) { state, curPixListId, allPixLists ->
+    val state = combine(_state, _allPixLists) { state, allPixLists ->
         state.copy(
             allPixLists = allPixLists,
-            curPixList = allPixLists.find { it.id == curPixListId },
         )
     }.stateIn(
         scope = viewModelScope,
@@ -35,7 +33,6 @@ class MainViewModel(
         initialValue = MainState()
     )
 
-    // PixList functions -----------------------------------------------------
     fun createPixList(name: String): Long {
         var id = 0L
         viewModelScope.launch {
@@ -44,13 +41,17 @@ class MainViewModel(
         return id // FIXME: DAS FUNKTIONIERT WAHRSCHEINLICH NICHT
     }
 
-    fun setCurPixListById(id: Long) {
-        _curPixListId.value = id
-    }
-
     fun deletePixListById(id: Long) {
         viewModelScope.launch {
             repository.deleteListById(id)
         }
+    }
+
+    fun setCurPixListId(id: Long?) {
+        _state.value = _state.value.copy(curPixListId = id)
+    }
+
+    fun setCurScreen(screen: Screen) {
+        _state.value = _state.value.copy(curScreen = screen)
     }
 }

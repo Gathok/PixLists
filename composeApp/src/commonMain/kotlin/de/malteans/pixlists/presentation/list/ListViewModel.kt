@@ -4,29 +4,34 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.malteans.pixlists.domain.PixCategory
 import de.malteans.pixlists.domain.PixColor
+import de.malteans.pixlists.domain.PixList
 import de.malteans.pixlists.domain.PixRepository
 import de.malteans.pixlists.util.Months
 import de.malteans.pixlists.util.PixDate
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 class ListViewModel(
     private val repository: PixRepository,
 ): ViewModel() {
 
     private val _curPixListId = MutableStateFlow<Long?>(null)
 
-    private val _allPixLists = repository
-        .getAllPixLists()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _curPixList: Flow<PixList?> = _curPixListId
+        .flatMapLatest { id ->
+            if (id != null) repository.getCurrentPixList(id)
+            else flowOf(null)
+        }
 
     private val _colorList = repository
         .getAllColors()
@@ -39,13 +44,13 @@ class ListViewModel(
     private val _state = MutableStateFlow(ListState())
 
     val state = combine(
-        _state, _curPixListId, _allPixLists.onStart { emit(emptyList()) }, _colorList.onStart { emit(emptyList()) }
-    ) { state, curPixListId, allPixLists, colorList ->
-        val curPixList = allPixLists.find { it.id == curPixListId }
-        state.copy(
+        _curPixList,
+        _colorList.onStart { emit(emptyList()) }
+    ) { curPixList, colors ->
+        ListState(
             curPixList = curPixList,
             curCategories = curPixList?.categories ?: emptyList(),
-            colorList = colorList,
+            colorList = colors,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -55,10 +60,12 @@ class ListViewModel(
 
     fun setPixListId(pixListId: Long?) {
         _curPixListId.value = pixListId
-    }
 
-    fun getInvalideNames(): List<String> {
-        return _allPixLists.value.map { it.name }
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                invalideNames = repository.getAllPixLists().first().map { it.name }
+            )
+        }
     }
 
     fun updatePixListName(newName: String) {
@@ -85,7 +92,7 @@ class ListViewModel(
         }
     }
 
-    fun deletePixCategory(category: PixCategory, undo: Boolean = false) {
+    fun deletePixCategory(category: PixCategory) {
         viewModelScope.launch {
             repository.deleteCategory(category.id)
         }
@@ -95,6 +102,9 @@ class ListViewModel(
     fun setPixEntry(day: Int, month: Months, category: PixCategory?) {
         viewModelScope.launch {
             if (category != null) {
+                if (_curPixList.first()!!.entries.contains(PixDate(month, day))) {
+                    repository.deleteEntry(_curPixListId.value!!, PixDate(month, day))
+                }
                 repository.createEntry(_curPixListId.value!!, category.id, PixDate(month, day))
             } else {
                 repository.deleteEntry(_curPixListId.value!!, PixDate(month, day))

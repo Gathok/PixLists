@@ -32,7 +32,7 @@ fun CustomDialog(
         properties = properties,
     ) {
         Box (
-            modifier = Modifier
+            modifier = modifier
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colors.surface)
         ) {

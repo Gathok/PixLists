@@ -32,7 +32,6 @@ import de.malteans.pixlists.presentation.util.customIcons.FilledPixIcon
 
 @Composable
 fun ColorDialog(
-    modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
     onFinish: (newName: String?, newRgb: List<Float>?, Boolean) -> Unit,
     onDelete: () -> Unit,

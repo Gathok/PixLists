@@ -38,9 +38,11 @@ import de.malteans.pixlists.presentation.util.customIcons.FilledPixIcon
 import de.malteans.pixlists.presentation.util.customIcons.OutlinedPixIcon
 import de.malteans.pixlists.util.Months
 import de.malteans.pixlists.util.PixDate
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.datetime.Clock
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun ListScreen(
     viewModel: ListViewModel = koinViewModel(),
@@ -91,7 +93,7 @@ fun ListScreen(
             },
             startDate = startDate
                 ?: (Clock.System.now().toEpochMilliseconds()),
-            curCategory = curCategory ?: state.curCategories.first()
+            curCategory = curCategory
         )
     }
 
@@ -134,7 +136,7 @@ fun ListScreen(
     if (showRenameDialog) {
         RenamePixListDialog(
             curName = state.curPixList?.name ?: "",
-            invalideNames = viewModel.getInvalideNames(),
+            invalideNames = state.invalideNames,
             onDismiss = { showRenameDialog = false },
             onFinish = { newName ->
                 viewModel.updatePixListName(newName)
