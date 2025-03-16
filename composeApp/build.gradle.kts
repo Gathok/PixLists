@@ -41,6 +41,9 @@ kotlin {
 
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            // More Icons
+            implementation(libs.androidx.material.icons.extended.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -67,9 +70,6 @@ kotlin {
 
             // Material 3
             implementation(compose.material3)
-
-            // More Icons
-            implementation(libs.androidx.material.icons.extended.android)
         }
 
         dependencies {
@@ -107,5 +107,6 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    implementation(libs.androidx.room.ktx)
 }
 

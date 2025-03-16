@@ -1,5 +1,6 @@
 package de.malteans.pixlists.data.database
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import de.malteans.pixlists.data.database.entities.PixCategoryEntity
@@ -12,6 +13,7 @@ import de.malteans.pixlists.data.database.entities.PixListEntity
     version = 1,
     exportSchema = false
 )
+@ConstructedBy(PixDatabaseConstructor::class)
 abstract class PixDatabase : RoomDatabase() {
 
     abstract val pixDao: PixDao
