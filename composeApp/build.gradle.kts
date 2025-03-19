@@ -41,9 +41,6 @@ kotlin {
 
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-
-            // More Icons
-            implementation(libs.androidx.material.icons.extended.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

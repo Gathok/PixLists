@@ -19,9 +19,13 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import de.malteans.pixlists.app.Route
 import de.malteans.pixlists.domain.PixList
 import de.malteans.pixlists.presentation.components.CustomDialog
+import de.malteans.pixlists.presentation.components.SnackbarManager
 import de.malteans.pixlists.presentation.components.customIcons.AddPixListIcon
 import de.malteans.pixlists.presentation.components.customIcons.FilledManageColor
 import de.malteans.pixlists.presentation.components.customIcons.FilledPixListIcon
@@ -126,7 +131,28 @@ fun MainScreen(
 
     var showHiddenLists by remember { mutableStateOf(false) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        SnackbarManager.snackbarMessages.collect { snackbarValue ->
+            val snackbarResult = snackbarHostState.showSnackbar(
+                message = snackbarValue.message,
+                actionLabel = snackbarValue.actionLabel,
+                withDismissAction = snackbarValue.withDismissAction,
+                duration = snackbarValue.duration
+            )
+            if (snackbarResult == SnackbarResult.ActionPerformed) {
+                snackbarValue.onAction()
+            }
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+        ) },
         modifier = Modifier.fillMaxSize(),
     ) {
         ModalNavigationDrawer(
@@ -134,7 +160,17 @@ fun MainScreen(
             drawerContent = {
                 ModalDrawerSheet {
                     Spacer(modifier = Modifier.height(8.dp))
-                    NavListHeader(onLongClick = { showHiddenLists = !showHiddenLists })
+                    NavListHeader(
+                        onLongClick = {
+                            showHiddenLists = !showHiddenLists
+                            scope.launch {
+                                SnackbarManager.showSnackbar("Hidden lists are now ${if (showHiddenLists) "visible" else "hidden"}",
+                                    actionLabel = "Undo",
+                                    onAction = { showHiddenLists = !showHiddenLists }
+                                )
+                            }
+                        }
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                     LazyColumn(modifier = Modifier.weight(1f)) {
                         items(state.allPixLists) { curPixList ->

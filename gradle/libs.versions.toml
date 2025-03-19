@@ -17,9 +17,7 @@ room = "2.7.0-alpha11"
 uiAndroid = "1.7.8"
 roomKtx = "2.6.1"
 
-materialIconsExtendedAndroid = "1.7.8"
 kotlinxDatetime = "0.6.2"
-
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -42,9 +40,6 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
-
-# More Icons ---------------------------------------
-androidx-material-icons-extended-android = { module = "androidx.compose.material:material-icons-extended-android", version.ref = "materialIconsExtendedAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
