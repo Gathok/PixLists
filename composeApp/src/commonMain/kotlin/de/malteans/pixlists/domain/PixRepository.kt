@@ -14,7 +14,7 @@ interface PixRepository {
 
     fun getAllPixLists(): Flow<List<PixList>>
 
-    fun getCurrentPixList(listId: Long): Flow<PixList>
+    fun getCurrentPixList(listId: Long): Flow<PixList?>
 
     // Category Operations ----------------------------------------------
     suspend fun createCategory(listId: Long, colorId: Long, name: String): Long

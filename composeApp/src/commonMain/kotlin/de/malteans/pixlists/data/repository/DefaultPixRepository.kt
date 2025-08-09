@@ -41,7 +41,7 @@ class DefaultPixRepository(
         }
     }
 
-    override fun getCurrentPixList(listId: Long): Flow<PixList> {
+    override fun getCurrentPixList(listId: Long): Flow<PixList?> {
         return combine(
             dao.getList(listId),
             dao.getAllColors(),
@@ -55,7 +55,7 @@ class DefaultPixRepository(
             val mappedEntries = entries.associate { entryEntity ->
                 entryEntity.date to mappedCategories[entryEntity.categoryId]
             }
-            listEntity.toPixList(mappedCategories.values.toList(), mappedEntries)
+            listEntity?.toPixList(mappedCategories.values.toList(), mappedEntries)
         }
     }
 
