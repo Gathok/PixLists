@@ -20,6 +20,5 @@ fun DayOfWeek.toUiText(): UiText {
         DayOfWeek.FRIDAY -> Res.string.friday
         DayOfWeek.SATURDAY -> Res.string.saturday
         DayOfWeek.SUNDAY -> Res.string.sunday
-        else -> throw IllegalArgumentException("Invalid day of week: $this")
     })
 }

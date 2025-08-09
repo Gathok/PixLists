@@ -24,6 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.malteans.pixlists.presentation.components.CustomDialog
+import org.jetbrains.compose.resources.stringResource
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.name_already_in_use
+import pixlists.composeapp.generated.resources.rename_pixlist
 
 @Composable
 fun RenamePixListDialog(
@@ -44,7 +48,7 @@ fun RenamePixListDialog(
         onDismissRequest = { onDismiss() },
         title = {
             Text(
-                text = "Rename PixList",
+                text = stringResource(Res.string.rename_pixlist),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -61,7 +65,7 @@ fun RenamePixListDialog(
         rightIcon = {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Rename",
+                contentDescription = "Submit",
                 tint = if (validToFinish) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 modifier = Modifier.clickable {
@@ -90,7 +94,7 @@ fun RenamePixListDialog(
                         .height(16.dp)
                 )
                 Text(
-                    text = "Name already in use",
+                    text = stringResource(Res.string.name_already_in_use),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error
                 )

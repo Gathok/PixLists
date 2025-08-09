@@ -31,6 +31,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.jetbrains.compose.resources.stringResource
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.name
+import pixlists.composeapp.generated.resources.name_already_in_use
+import pixlists.composeapp.generated.resources.new_pixlist
 
 // NewListDialog ----------------------------------------------------------------
 @Composable
@@ -70,7 +75,7 @@ fun NewListDialog(
                         modifier = Modifier.clickable { onDismiss() }
                     )
                     Text(
-                        text = "New List",
+                        text = stringResource(Res.string.new_pixlist),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -103,7 +108,7 @@ fun NewListDialog(
                                 .height(16.dp)
                         )
                         Text(
-                            text = "Name already in use",
+                            text = stringResource(Res.string.name_already_in_use),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -118,7 +123,7 @@ fun NewListDialog(
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text("Name") },
+                        label = { Text(stringResource(Res.string.name)) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         isError = invalidNames.contains(name.trim()),

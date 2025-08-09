@@ -12,4 +12,25 @@
     <string name="friday">Friday</string>
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
+    <string name="add_category">Add Category</string>
+    <string name="edit_category">Edit Category</string>
+    <string name="name_already_in_use">Name already in use</string>
+    <string name="name">Name</string>
+    <string name="color">Color</string>
+    <string name="no_color">No color</string>
+    <string name="set_entry">Set Entry</string>
+    <string name="date">Date</string>
+    <string name="category">Category</string>
+    <string name="rename_pixlist">Rename PixList</string>
+    <string name="select_pixlist_desc">Create and open a PixList with at least one Category.</string>
+    <string name="loading">Loading...</string>
+    <string name="no_pixlist_selected">No PixList selected</string>
+    <string name="delete_pixlist">Delete PixList</string>
+    <string name="confirm_delete_desc">Are you sure, you want to delete the list '%1$s'?</string>
+    <string name="new_pixlist">New PixList</string>
+    <string name="manage_colors">Manage Colors</string>
+    <string name="edit_color">Edit Colors</string>
+    <string name="add_color">Add Colors</string>
+    <string name="delete_unused_colors">Delete unused Colors</string>
+    <string name="delete_unused_colors_desc">Are you sure you want to delete all colors that are not used in any category?</string>
 </resources>

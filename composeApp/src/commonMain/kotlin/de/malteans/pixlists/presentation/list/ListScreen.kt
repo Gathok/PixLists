@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.malteans.pixlists.domain.Months
 import de.malteans.pixlists.domain.PixCategory
 import de.malteans.pixlists.presentation.components.CustomTopBar
 import de.malteans.pixlists.presentation.components.SnackbarManager
@@ -40,12 +41,16 @@ import de.malteans.pixlists.presentation.list.components.CategoryDialog
 import de.malteans.pixlists.presentation.list.components.EntryDialog
 import de.malteans.pixlists.presentation.list.components.ListStatus
 import de.malteans.pixlists.presentation.list.components.RenamePixListDialog
-import de.malteans.pixlists.domain.Months
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.loading
+import pixlists.composeapp.generated.resources.no_pixlist_selected
+import pixlists.composeapp.generated.resources.select_pixlist_desc
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -186,6 +191,7 @@ fun ListScreen(
                     }
                 },
                 actions = {
+                    val RES_SELECT_PIXLIST_DESC = stringResource(Res.string.select_pixlist_desc)
                     IconButton(
                         onClick = {
                             if (state.curPixList != null  && state.curCategories.isNotEmpty()) {
@@ -193,7 +199,7 @@ fun ListScreen(
                             } else {
                                 scope.launch {
                                     SnackbarManager.showSnackbar(
-                                        message = "Create a PixList and at least one Category first.",
+                                        message = RES_SELECT_PIXLIST_DESC,
                                         duration = SnackbarDuration.Short,
                                         withDismissAction = true
                                     )
@@ -228,7 +234,7 @@ fun ListScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Loading...")
+                        Text(stringResource(Res.string.loading))
                     }
                 }
                 ListStatus.OPENED -> {
@@ -298,12 +304,6 @@ fun ListScreen(
                                                                                 entryToEdit = currentDate
                                                                                 curEntryCategory = pixCategory
                                                                                 showEntryDialog = true
-                                                                            } else {
-                                                                                //                                                                    Toast.makeText(
-                                                                                //                                                                        context,
-                                                                                //                                                                        context.getString(R.string.create_category_first_desc),
-                                                                                //                                                                        Toast.LENGTH_SHORT
-                                                                                //                                                                    ).show()
                                                                             }
                                                                         }
                                                                     ) {
@@ -424,7 +424,7 @@ fun ListScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("No PixList selected")
+                        Text(stringResource(Res.string.no_pixlist_selected))
                     }
                 }
             }

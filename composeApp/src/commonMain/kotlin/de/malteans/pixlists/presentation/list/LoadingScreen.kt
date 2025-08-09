@@ -17,6 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.malteans.pixlists.presentation.components.CustomTopBar
+import org.jetbrains.compose.resources.stringResource
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.loading
 
 @Composable
 fun LoadingScreen(openDrawer: () -> Unit) {
@@ -49,7 +52,7 @@ fun LoadingScreen(openDrawer: () -> Unit) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Loading...")
+                Text(stringResource(Res.string.loading))
             }
         }
     }

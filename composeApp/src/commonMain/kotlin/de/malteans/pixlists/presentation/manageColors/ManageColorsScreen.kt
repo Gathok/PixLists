@@ -26,11 +26,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.malteans.pixlists.domain.PixColor
-import de.malteans.pixlists.presentation.manageColors.components.ColorItem
+import de.malteans.pixlists.presentation.components.CustomDialog
 import de.malteans.pixlists.presentation.components.CustomTopBar
 import de.malteans.pixlists.presentation.manageColors.components.ColorDialog
-import de.malteans.pixlists.presentation.components.CustomDialog
+import de.malteans.pixlists.presentation.manageColors.components.ColorItem
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.delete_unused_colors
+import pixlists.composeapp.generated.resources.delete_unused_colors_desc
+import pixlists.composeapp.generated.resources.manage_colors
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -89,14 +94,14 @@ fun ManageColorsScreen(
             },
             title = {
                 Text(
-                    text = "Delete Unused Colors",
+                    text = stringResource(Res.string.delete_unused_colors),
                     style = MaterialTheme.typography.titleLarge,
                 )
             },
             leftIcon = {
                 Icon(
                     imageVector = Icons.Default.Clear,
-                    contentDescription = "Delete",
+                    contentDescription = "Close",
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clickable {
                         showDeleteUnusedDialog = false
@@ -116,7 +121,7 @@ fun ManageColorsScreen(
             }
         ) {
             Text(
-                text = ("Are you sure you want to delete all colors that are not used in any Category?"),
+                text = stringResource(Res.string.delete_unused_colors_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
@@ -129,7 +134,7 @@ fun ManageColorsScreen(
         topBar = {
             CustomTopBar(
                 title = { Text(
-                    text = "Manage Colors",
+                    text = stringResource(Res.string.manage_colors),
                     modifier = Modifier
                         .combinedClickable (
                             onClick = {

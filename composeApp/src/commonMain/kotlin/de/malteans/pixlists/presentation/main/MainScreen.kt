@@ -50,7 +50,13 @@ import de.malteans.pixlists.presentation.main.components.NavListHeader
 import de.malteans.pixlists.presentation.main.components.NewListDialog
 import de.malteans.pixlists.presentation.main.components.Screen
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.confirm_delete_desc
+import pixlists.composeapp.generated.resources.delete_pixlist
+import pixlists.composeapp.generated.resources.manage_colors
+import pixlists.composeapp.generated.resources.new_pixlist
 
 @Composable
 fun MainScreen(
@@ -88,7 +94,7 @@ fun MainScreen(
             onDismissRequest = { showDeleteListDialog = false },
             title = {
                 Text(
-                    text = "Delete PixList",
+                    text = stringResource(Res.string.delete_pixlist),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -122,7 +128,7 @@ fun MainScreen(
             },
         ) {
             Text(
-                text = "Sure you want to delete ${listToDelete!!.name}?",
+                text = stringResource(Res.string.confirm_delete_desc, listToDelete!!.name),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(top = 16.dp)
@@ -222,7 +228,7 @@ fun MainScreen(
                         }
                         item {
                             NavigationDrawerItem(
-                                label = { Text("New PixList") },
+                                label = { Text(stringResource(Res.string.new_pixlist)) },
                                 onClick = {
                                     showNewListDialog = true
                                 },
@@ -238,7 +244,7 @@ fun MainScreen(
                         }
                     }
                     NavigationDrawerItem(
-                        label = { Text("Manage colors") },
+                        label = { Text(stringResource(Res.string.manage_colors)) },
                         onClick = {
                             navController.navigate(Route.ManageColorsScreen)
                             viewModel.setCurPixListId(null)

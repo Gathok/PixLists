@@ -19,6 +19,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import de.malteans.pixlists.presentation.components.AppIconPainter
+import org.jetbrains.compose.resources.stringResource
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.app_name
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -56,7 +59,7 @@ fun NavListHeader(
         }
         Column {
             Text(
-                text = "PixLists",
+                text = stringResource(Res.string.app_name),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier

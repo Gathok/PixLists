@@ -12,4 +12,25 @@
     <string name="friday">Freitag</string>
     <string name="saturday">Samstag</string>
     <string name="sunday">Sonntag</string>
+    <string name="add_category">Kategorie hinzufügen</string>
+    <string name="edit_category">Kategorie bearbeiten</string>
+    <string name="name_already_in_use">Name bereits verwendet</string>
+    <string name="name">Name</string>
+    <string name="color">Farbe</string>
+    <string name="no_color">Keine Farbe</string>
+    <string name="set_entry">Eintrag setzen</string>
+    <string name="date">Datum</string>
+    <string name="category">Kategorie</string>
+    <string name="rename_pixlist">PixList umbenennen</string>
+    <string name="select_pixlist_desc">Erstelle und öffne eine PixList mit mindestens einer Kategorie.</string>
+    <string name="loading">Lade...</string>
+    <string name="no_pixlist_selected">Keine PixList ausgewählt</string>
+    <string name="delete_pixlist">PixList löschen</string>
+    <string name="confirm_delete_desc">Bist du sicher, dass du die Liste '%1$s' löschen möchtest?</string>
+    <string name="new_pixlist">Neue PixList</string>
+    <string name="manage_colors">Farben verwalten</string>
+    <string name="edit_color">Farbe bearbeiten</string>
+    <string name="add_color">Farbe hinzufügen</string>
+    <string name="delete_unused_colors">Nicht verwendete Farben löschen</string>
+    <string name="delete_unused_colors_desc">Bist du sicher, dass du alle Farben, die nicht von einer Kategorie verwendet werden, gelöscht werden sollen?</string>
 </resources>

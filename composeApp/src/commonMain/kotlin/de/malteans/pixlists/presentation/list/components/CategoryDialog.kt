@@ -31,6 +31,14 @@ import de.malteans.pixlists.domain.PixColor
 import de.malteans.pixlists.presentation.components.CustomDialog
 import de.malteans.pixlists.presentation.components.Dropdown
 import de.malteans.pixlists.presentation.components.customIcons.FilledPixIcon
+import org.jetbrains.compose.resources.stringResource
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.add_category
+import pixlists.composeapp.generated.resources.color
+import pixlists.composeapp.generated.resources.edit_category
+import pixlists.composeapp.generated.resources.name
+import pixlists.composeapp.generated.resources.name_already_in_use
+import pixlists.composeapp.generated.resources.no_color
 
 // NewCategoryDialog ----------------------------------------------------------------
 @Composable
@@ -50,11 +58,8 @@ fun CategoryDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = if (isEdit) {
-                    "Edit Category"
-                } else {
-                    "Add Category"
-                },
+                text = if (isEdit) stringResource(Res.string.add_category)
+                    else stringResource(Res.string.edit_category),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -82,7 +87,7 @@ fun CategoryDialog(
         rightIcon = {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Add",
+                contentDescription = "Submit",
                 tint = if (name.isNotBlank() && color != null &&
                     (!invalidNames.contains(name.trim()) xor (name.trim() == (categoryToEdit?.name ?: ""))) &&
                     (name.trim() != (categoryToEdit?.name ?: "") || color != categoryToEdit?.color)
@@ -119,7 +124,7 @@ fun CategoryDialog(
                         .height(16.dp)
                 )
                 Text(
-                    text = "Name already in use",
+                    text = stringResource(Res.string.name_already_in_use),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -134,7 +139,7 @@ fun CategoryDialog(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name") },
+                label = { Text(stringResource(Res.string.name)) },
                 modifier = Modifier
                     .fillMaxWidth(),
                 isError = invalidNames.contains(name.trim()) && name.trim() != (categoryToEdit?.name ?: ""),
@@ -154,9 +159,10 @@ fun CategoryDialog(
                     modifier = Modifier
                         .fillMaxWidth(),
                     options = colors.associateBy({ it }, { it.name }),
-                    label = "Color",
+                    label = stringResource(Res.string.color),
                     onValueChanged = { color = it as PixColor },
-                    selectedOption = Pair(color, color?.name ?: "No Color"),
+                    selectedOption = Pair(color, color?.name
+                        ?: stringResource(Res.string.no_color)),
                     optionIcon = { color ->
                         if (color != null) {
                             color as PixColor

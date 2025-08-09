@@ -35,6 +35,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.category
+import pixlists.composeapp.generated.resources.date
+import pixlists.composeapp.generated.resources.set_entry
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -73,7 +78,7 @@ fun EntryDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                "Set Entry",
+                text = stringResource(Res.string.set_entry),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -104,7 +109,7 @@ fun EntryDialog(
         rightIcon = {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Add",
+                contentDescription = "Submit",
                 tint = if (ready) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                 modifier = Modifier.clickable {
@@ -125,7 +130,7 @@ fun EntryDialog(
         ) {
             OutlinedText(
                 value = selectedDate.asString(),
-                label = { Text("Date") },
+                label = { Text(stringResource(Res.string.date)) },
                 trailingIcon = @Composable {
                     Icon(
                         imageVector = Icons.Default.EditCalendar,
@@ -143,7 +148,7 @@ fun EntryDialog(
             Dropdown(
                 modifier = Modifier.fillMaxWidth(),
                 options = categories.associateBy({ it }, { it.name }),
-                label = "Category",
+                label = stringResource(Res.string.category),
                 onValueChanged = { selectedCategory = it as PixCategory },
                 selectedOption = Pair(selectedCategory, selectedCategory?.name ?: ""),
                 optionIcon = { category ->
@@ -152,13 +157,13 @@ fun EntryDialog(
                         if (category.color != null) {
                             Icon(
                                 imageVector = FilledPixIcon,
-                                contentDescription = "Color",
+                                contentDescription = "Filled Pix",
                                 tint = category.color.toColor(),
                             )
                         } else {
                             Icon(
                                 imageVector = OutlinedPixIcon,
-                                contentDescription = "Color",
+                                contentDescription = "Outlined Pix",
                                 tint = MaterialTheme.colorScheme.error,
                             )
                         }

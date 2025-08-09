@@ -30,6 +30,13 @@ import androidx.compose.ui.unit.dp
 import de.malteans.pixlists.domain.PixColor
 import de.malteans.pixlists.presentation.components.CustomDialog
 import de.malteans.pixlists.presentation.components.customIcons.FilledPixIcon
+import org.jetbrains.compose.resources.stringResource
+import pixlists.composeapp.generated.resources.Res
+import pixlists.composeapp.generated.resources.add_color
+import pixlists.composeapp.generated.resources.color
+import pixlists.composeapp.generated.resources.edit_color
+import pixlists.composeapp.generated.resources.name
+import pixlists.composeapp.generated.resources.name_already_in_use
 
 @Composable
 fun ColorDialog(
@@ -60,11 +67,8 @@ fun ColorDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = if (isEdit) {
-                    "Edit Color"
-                } else {
-                    "Add Color"
-                },
+                text = if (isEdit) stringResource(Res.string.edit_color)
+                    else stringResource(Res.string.add_color),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -126,7 +130,7 @@ fun ColorDialog(
                         .height(16.dp)
                 )
                 Text(
-                    text = "Name already in use",
+                    text = stringResource(Res.string.name_already_in_use),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -141,7 +145,7 @@ fun ColorDialog(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name") },
+                label = { Text(stringResource(Res.string.name)) },
                 modifier = Modifier
                     .fillMaxWidth(),
                 isError = invalidNames.contains(name.trim()) && name.trim() != (colorToEdit?.name ?: ""),
@@ -157,7 +161,7 @@ fun ColorDialog(
                             selectedHexValue = it
                         }
                     },
-                    label = { Text("Color") },
+                    label = { Text(stringResource(Res.string.color)) },
                     modifier = Modifier
                         .fillMaxWidth(),
                     isError = !isValidHexColor(selectedHexValue),
