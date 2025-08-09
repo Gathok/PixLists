@@ -14,7 +14,10 @@ import de.malteans.pixlists.presentation.manageColors.ManageColorsScreen
 
 @Composable
 fun NavGraph(
-    navController: NavHostController, openDrawer: () -> Unit
+    navController: NavHostController,
+    openDrawer: () -> Unit,
+    setCurScreen: (Screen) -> Unit,
+    setPixListId: (Long?) -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -27,6 +30,8 @@ fun NavGraph(
         // List Screen
         composable<Route.ListScreen> {
             val args = it.toRoute<Route.ListScreen>()
+            setCurScreen(Screen.LIST)
+            setPixListId(args.curPixListId)
             ListScreenRoot(
                 openDrawer = openDrawer,
                 curPixListId = args.curPixListId,
@@ -34,12 +39,15 @@ fun NavGraph(
         }
         // Manage Colors Screen
         composable<Route.ManageColorsScreen> {
+            setCurScreen(Screen.MANAGE_COLORS)
+            setPixListId(null)
             ManageColorsScreen(
                 openDrawer = openDrawer,
             )
         }
         // Loading Screen
         composable<Route.LoadingScreen> {
+            setCurScreen(Screen.LIST)
             LoadingScreen(openDrawer = openDrawer)
         }
     }

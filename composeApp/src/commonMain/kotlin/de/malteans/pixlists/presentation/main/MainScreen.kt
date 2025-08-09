@@ -194,7 +194,11 @@ fun MainScreen(
                                         scope.launch {
                                             navController.navigate(Route.LoadingScreen)
                                             drawerState.close()
-                                            navController.navigate(Route.ListScreen(curPixList.id))
+                                            navController.navigate(Route.ListScreen(curPixList.id)) {
+                                                popUpTo(Route.LoadingScreen) {
+                                                    inclusive = true
+                                                }
+                                            }
                                         }
                                     },
                                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
@@ -272,7 +276,9 @@ fun MainScreen(
         ) {
             NavGraph(
                 navController = navController,
-                openDrawer = { scope.launch { drawerState.open() } }
+                openDrawer = { scope.launch { drawerState.open() } },
+                setCurScreen = { screen -> viewModel.setCurScreen(screen) },
+                setPixListId = { id -> viewModel.setCurPixListId(id) },
             )
         }
     }
