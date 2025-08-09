@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import de.malteans.pixlists.app.Route
-import de.malteans.pixlists.presentation.list.ListScreen
+import de.malteans.pixlists.presentation.list.ListScreenRoot
 import de.malteans.pixlists.presentation.list.LoadingScreen
 import de.malteans.pixlists.presentation.manageColors.ManageColorsScreen
 
@@ -27,7 +27,7 @@ fun NavGraph(
         // List Screen
         composable<Route.ListScreen> {
             val args = it.toRoute<Route.ListScreen>()
-            ListScreen(
+            ListScreenRoot(
                 openDrawer = openDrawer,
                 curPixListId = args.curPixListId,
             )

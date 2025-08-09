@@ -10,9 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,139 +25,152 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import de.malteans.pixlists.domain.PixCategory
 import de.malteans.pixlists.presentation.components.CustomDialog
 import de.malteans.pixlists.presentation.components.Dropdown
+import de.malteans.pixlists.presentation.components.OutlinedText
 import de.malteans.pixlists.presentation.components.customIcons.FilledPixIcon
 import de.malteans.pixlists.presentation.components.customIcons.OutlinedPixIcon
-import de.malteans.pixlists.util.Months
-import de.malteans.pixlists.util.isValidDate
-import de.malteans.pixlists.util.toStringDate
-import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EntryDialog(
     categories: List<PixCategory>,
     onDismiss: () -> Unit,
-    onEdit: (Int, Months, PixCategory?) -> Unit,
-    startDate: Long = Clock.System.now().toEpochMilliseconds(),
+    onEdit: (LocalDate, PixCategory?) -> Unit,
+    startDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     curCategory: PixCategory? = null,
 ) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            dismissOnBackPress = true,
-            dismissOnClickOutside = false
+    var selectedDate by remember { mutableStateOf(startDate) }
+    var selectedCategory by remember { mutableStateOf(curCategory) }
+
+    var ready by remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedCategory) {
+        ready = selectedCategory != null
+    }
+
+    var showDatePickerDialog by remember { mutableStateOf(false) }
+
+    if (showDatePickerDialog) {
+        CustomDatePickerDialog(
+            onDismissRequest = { showDatePickerDialog = false },
+            onSubmit = { newDate ->
+                selectedDate = newDate
+                showDatePickerDialog = false
+            },
+            initialSelectedDate = selectedDate
         )
-    ) {
-        var selectedDate by remember { mutableStateOf(startDate.toStringDate()) }
-        var selectedCategory by remember { mutableStateOf(curCategory) }
+    }
 
-        var ready by remember { mutableStateOf(false) }
-
-        LaunchedEffect(selectedDate, selectedCategory) {
-            ready = selectedDate.isValidDate() && selectedCategory != null
-        }
-
-        CustomDialog(
-            onDismissRequest = onDismiss,
-            title = {
-                Text(
-                    "Set Entry",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            },
-            leftIcon = {
-                Row {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Close",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.clickable { onDismiss() }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Edit Date",
-                        tint = if (ready) MaterialTheme.colorScheme.onSurface
-                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                        modifier = Modifier.clickable {
-                            if (ready) {
-                                val day = selectedDate.split(".")[0].toInt()
-                                val month = Months.getByIndex(selectedDate.split(".")[1].toInt())
-                                onEdit(day, month, null)
-                            }
-                        }
-                    )
-                }
-            },
-            rightIcon = {
+    CustomDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Set Entry",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        leftIcon = {
+            Row {
                 Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Add",
-                    tint = if (ready) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Close",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clickable { onDismiss() }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Entry",
+                    tint = if (ready) MaterialTheme.colorScheme.onSurface
+                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     modifier = Modifier.clickable {
                         if (ready) {
-                            val day = selectedDate.split(".")[0].toInt()
-                            val month = Months.getByIndex(selectedDate.split(".")[1].toInt())
-                            onEdit(day, month, selectedCategory)
+                            onEdit(selectedDate, null)
                         }
                     }
                 )
-            },
-            modifier = Modifier.padding(16.dp),
+            }
+        },
+        rightIcon = {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Add",
+                tint = if (ready) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                modifier = Modifier.clickable {
+                    if (ready) {
+                        onEdit(selectedDate, selectedCategory)
+                    }
+                }
+            )
+        },
+        modifier = Modifier.padding(16.dp),
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, bottom = 4.dp)
+                .clickable { showDatePickerDialog = true },
         ) {
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = selectedDate,
-                    onValueChange = { selectedDate = it },
-                    label = { Text("Date") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, bottom = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Dropdown(
-                    modifier = Modifier.fillMaxWidth(),
-                    options = categories.associateBy({ it }, { it.name }),
-                    label = "Category",
-                    onValueChanged = { selectedCategory = it as PixCategory },
-                    selectedOption = Pair(selectedCategory, selectedCategory?.name ?: ""),
-                    optionIcon = { category ->
-                        if (category != null) {
-                            category as PixCategory
-                            if (category.color != null) {
-                                Icon(
-                                    imageVector = FilledPixIcon,
-                                    contentDescription = "Color",
-                                    tint = category.color.toColor(),
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = OutlinedPixIcon,
-                                    contentDescription = "Color",
-                                    tint = MaterialTheme.colorScheme.error,
-                                )
-                            }
+            OutlinedText(
+                value = selectedDate.asString(),
+                label = { Text("Date") },
+                trailingIcon = @Composable {
+                    Icon(
+                        imageVector = Icons.Default.EditCalendar,
+                        contentDescription = "Select Date",
+                    )
+                },
+            )
+        }
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Dropdown(
+                modifier = Modifier.fillMaxWidth(),
+                options = categories.associateBy({ it }, { it.name }),
+                label = "Category",
+                onValueChanged = { selectedCategory = it as PixCategory },
+                selectedOption = Pair(selectedCategory, selectedCategory?.name ?: ""),
+                optionIcon = { category ->
+                    if (category != null) {
+                        category as PixCategory
+                        if (category.color != null) {
+                            Icon(
+                                imageVector = FilledPixIcon,
+                                contentDescription = "Color",
+                                tint = category.color.toColor(),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = OutlinedPixIcon,
+                                contentDescription = "Color",
+                                tint = MaterialTheme.colorScheme.error,
+                            )
                         }
                     }
-                )
-            }
+                }
+            )
         }
     }
+}
+
+@Composable
+fun LocalDate.asString(): String {
+    return "${dayOfWeek.toUiText().asString()}, " +
+            "${day.toString().padStart(2, '0')}.${month.number.toString().padStart(2, '0')}.${this.year}"
 }

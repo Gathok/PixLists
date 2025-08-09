@@ -1,7 +1,7 @@
 package de.malteans.pixlists.domain
 
-import de.malteans.pixlists.util.PixDate
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDate
 
 interface PixRepository {
 
@@ -19,7 +19,7 @@ interface PixRepository {
     // Category Operations ----------------------------------------------
     suspend fun createCategory(listId: Long, colorId: Long, name: String): Long
 
-    suspend fun deleteCategory(categoryId: Long)
+    suspend fun deleteCategoryById(categoryId: Long)
 
     suspend fun renameCategory(categoryId: Long, newName: String)
 
@@ -39,7 +39,9 @@ interface PixRepository {
     fun getAllColors(): Flow<List<PixColor>>
 
     // Entry Operations --------------------------------------------------
-    suspend fun createEntry(listId: Long, categoryId: Long, date: PixDate): Long
+    suspend fun createEntry(listId: Long, categoryId: Long, date: LocalDate): Long
 
-    suspend fun deleteEntry(listId: Long, date: PixDate)
+    suspend fun setEntry(listId: Long, categoryId: Long, date: LocalDate): Long
+
+    suspend fun deleteEntry(listId: Long, date: LocalDate)
 }

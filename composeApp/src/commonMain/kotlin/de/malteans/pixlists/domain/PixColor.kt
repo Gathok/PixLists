@@ -1,7 +1,6 @@
 package de.malteans.pixlists.domain
 
 import androidx.compose.ui.graphics.Color
-import de.malteans.pixlists.util.toHex
 
 data class PixColor(
     val id: Long = 0L,

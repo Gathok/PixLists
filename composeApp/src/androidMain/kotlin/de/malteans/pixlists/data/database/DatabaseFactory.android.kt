@@ -3,6 +3,7 @@ package de.malteans.pixlists.data.database
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import de.malteans.pixlists.data.database.migration.MIGRATION1_2
 
 actual class DatabaseFactory(
     private val context: Context
@@ -14,5 +15,8 @@ actual class DatabaseFactory(
             context = appContext,
             name = dbFile.absolutePath
         )
+            .addMigrations(
+                PixDatabase.Companion.MIGRATION1_2,
+            )
     }
 }

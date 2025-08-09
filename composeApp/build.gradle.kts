@@ -45,13 +45,15 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
+            // Koin
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
@@ -59,14 +61,12 @@ kotlin {
             implementation(libs.jetbrains.compose.navigation)
             implementation(libs.kotlinx.serialization.json)
 
+            // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
 
             // Datetime
             implementation(libs.kotlinx.datetime)
-
-            // Material 3
-            implementation(compose.material3)
         }
 
         dependencies {

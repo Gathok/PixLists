@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +21,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -40,14 +43,12 @@ import de.malteans.pixlists.domain.PixList
 import de.malteans.pixlists.presentation.components.CustomDialog
 import de.malteans.pixlists.presentation.components.SnackbarManager
 import de.malteans.pixlists.presentation.components.customIcons.AddPixListIcon
-import de.malteans.pixlists.presentation.components.customIcons.FilledManageColor
 import de.malteans.pixlists.presentation.components.customIcons.FilledPixListIcon
-import de.malteans.pixlists.presentation.components.customIcons.OutlinedManageColor
 import de.malteans.pixlists.presentation.components.customIcons.OutlinedPixListIcon
 import de.malteans.pixlists.presentation.main.components.NavGraph
 import de.malteans.pixlists.presentation.main.components.NavListHeader
 import de.malteans.pixlists.presentation.main.components.NewListDialog
-import de.malteans.pixlists.util.Screen
+import de.malteans.pixlists.presentation.main.components.Screen
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -108,7 +109,7 @@ fun MainScreen(
             rightIcon = {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Yes",
+                    contentDescription = "Delete",
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.clickable {
                         viewModel.deletePixListById(listToDelete!!.id)
@@ -164,9 +165,12 @@ fun MainScreen(
                         onLongClick = {
                             showHiddenLists = !showHiddenLists
                             scope.launch {
-                                SnackbarManager.showSnackbar("Hidden lists are now ${if (showHiddenLists) "visible" else "hidden"}",
+                                SnackbarManager.showSnackbar(
+                                    message = "Hidden lists are now ${if (showHiddenLists) "visible" else "hidden"}",
                                     actionLabel = "Undo",
-                                    onAction = { showHiddenLists = !showHiddenLists }
+                                    onAction = { showHiddenLists = !showHiddenLists },
+                                    withDismissAction = true,
+                                    duration = SnackbarDuration.Short
                                 )
                             }
                         }
@@ -246,12 +250,12 @@ fun MainScreen(
                         icon = {
                             if (state.curScreen == Screen.MANAGE_COLORS) {
                                 Icon(
-                                    imageVector = FilledManageColor,
+                                    imageVector = Icons.Filled.ColorLens,
                                     contentDescription = "Manage Colors"
                                 )
                             } else {
                                 Icon(
-                                    imageVector = OutlinedManageColor,
+                                    imageVector = Icons.Outlined.ColorLens,
                                     contentDescription = "Manage Colors"
                                 )
                             }

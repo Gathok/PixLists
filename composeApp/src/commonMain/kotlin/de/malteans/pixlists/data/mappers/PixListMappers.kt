@@ -3,11 +3,11 @@ package de.malteans.pixlists.data.mappers
 import de.malteans.pixlists.data.database.entities.PixListEntity
 import de.malteans.pixlists.domain.PixCategory
 import de.malteans.pixlists.domain.PixList
-import de.malteans.pixlists.util.PixDate
+import kotlinx.datetime.LocalDate
 
 fun PixListEntity.toPixList(
     categories: List<PixCategory> = emptyList(),
-    entries: Map<PixDate, PixCategory?> = emptyMap()
+    entries: Map<LocalDate, PixCategory?> = emptyMap()
 ): PixList {
     return PixList(
         id = id,

@@ -1,10 +1,10 @@
 package de.malteans.pixlists.domain
 
-import de.malteans.pixlists.util.PixDate
+import kotlinx.datetime.LocalDate
 
 data class PixList(
     val id: Long,
     val name: String,
     val categories: List<PixCategory>,
-    val entries: Map<PixDate, PixCategory?>,
+    val entries: Map<LocalDate, PixCategory?>,
 )

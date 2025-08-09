@@ -11,32 +11,26 @@ import de.malteans.pixlists.data.mappers.toPixList
 import de.malteans.pixlists.domain.PixColor
 import de.malteans.pixlists.domain.PixList
 import de.malteans.pixlists.domain.PixRepository
-import de.malteans.pixlists.util.PixDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
 
 class DefaultPixRepository(
     private val dao: PixDao,
 ) : PixRepository {
 
-    // List Operations --------------------------------------------------
+    // List Operations ----------------------------------------------------------------------------
     override suspend fun createList(name: String): Long {
-        val entity = PixListEntity(name = name)
-        // upsertList returns the new id
-        return dao.upsertList(entity)
+        return dao.upsertList(PixListEntity(name = name))
     }
 
     override suspend fun deleteListById(listId: Long) {
-        val listEntity = dao.getList(listId).first()
-        dao.deleteList(listEntity)
+        dao.deleteListById(listId)
     }
 
     override suspend fun renameList(listId: Long, newName: String) {
-        val listEntity = dao.getList(listId).first()
-        val updated = listEntity.copy(name = newName)
-        dao.upsertList(updated)
+        dao.renameList(listId, newName)
     }
 
     override fun getAllPixLists(): Flow<List<PixList>> {
@@ -59,7 +53,7 @@ class DefaultPixRepository(
                 categoryEntity.id to categoryEntity.toPixCategory(colorsMap[categoryEntity.colorId])
             }
             val mappedEntries = entries.associate { entryEntity ->
-                PixDate.fromString(entryEntity.date) to mappedCategories[entryEntity.categoryId]
+                entryEntity.date to mappedCategories[entryEntity.categoryId]
             }
             listEntity.toPixList(mappedCategories.values.toList(), mappedEntries)
         }
@@ -68,67 +62,48 @@ class DefaultPixRepository(
     // Category Operations ----------------------------------------------
     override suspend fun createCategory(listId: Long, colorId: Long, name: String): Long {
         // Determine orderIndex based on current number of categories
-        val currentCategories = dao.getCategoriesForList(listId).first()
-        val orderIndex = currentCategories.size
-        val entity = PixCategoryEntity(
+        val orderIndex = dao.getCategoryCountForList(listId)
+        return dao.upsertCategory(PixCategoryEntity(
             listId = listId,
             colorId = colorId,
             name = name,
             orderIndex = orderIndex
-        )
-        return dao.upsertCategory(entity)
+        ))
     }
 
-    override suspend fun deleteCategory(categoryId: Long) {
-        val categoryEntity = dao.getCategory(categoryId).first()
-        dao.deleteCategory(categoryEntity)
+    override suspend fun deleteCategoryById(categoryId: Long) {
+        dao.deleteCategoryById(categoryId)
     }
 
     override suspend fun renameCategory(categoryId: Long, newName: String) {
-        val categoryEntity = dao.getCategory(categoryId).first()
-        val updated = categoryEntity.copy(name = newName)
-        dao.upsertCategory(updated)
+        dao.renameCategory(categoryId, newName)
     }
 
     override suspend fun changeCategoryColor(categoryId: Long, newColorId: Long) {
-        val categoryEntity = dao.getCategory(categoryId).first()
-        val updated = categoryEntity.copy(colorId = newColorId)
-        dao.upsertCategory(updated)
+        dao.changeCategoryColor(categoryId, newColorId)
     }
 
     override suspend fun changeCategoriesOrder(listId: Long, newOrderByIds: List<Long>) {
-        newOrderByIds.forEachIndexed { index, catId ->
-            val categoryEntity = dao.getCategory(catId).first()
-            val updated = categoryEntity.copy(orderIndex = index)
-            dao.upsertCategory(updated)
+        newOrderByIds.forEachIndexed { orderIndex, categoryId ->
+            dao.changeCategoryOrderIndex(categoryId, orderIndex)
         }
     }
 
     // Color Operations --------------------------------------------------
     override suspend fun createColor(name: String, red: Float, green: Float, blue: Float): Long {
-        val entity = PixColorEntity(name = name, red = red, green = green, blue = blue)
-        return dao.upsertColor(entity)
+        return dao.upsertColor(PixColorEntity(name = name, red = red, green = green, blue = blue))
     }
 
     override suspend fun deleteColor(colorId: Long) {
-        // Suggestion: Consider adding a getColor(colorId: Int) function to the DAO.
-        val colorEntity = dao.getAllColors().first().firstOrNull { it.id == colorId }
-            ?: throw IllegalArgumentException("Color with id $colorId not found")
-        dao.deleteColor(colorEntity)
+        dao.deleteColorById(colorId)
     }
 
     override suspend fun renameColor(colorId: Long, newName: String) {
-        val colorEntity = dao.getAllColors().first().firstOrNull { it.id == colorId }
-            ?: throw IllegalArgumentException("Color with id $colorId not found")
-        val updated = colorEntity.copy(name = newName)
-        dao.upsertColor(updated)
+        dao.renameColor(colorId, newName)
     }
 
     override suspend fun changeColor(colorId: Long, newRed: Float, newGreen: Float, newBlue: Float) {
-        val colorEntity = dao.getAllColors().first().firstOrNull { it.id == colorId }
-            ?: throw IllegalArgumentException("Color with id $colorId not found")
-        val updated = colorEntity.copy(red = newRed, green = newGreen, blue = newBlue)
-        dao.upsertColor(updated)
+        dao.changeColor(colorId, newRed, newGreen, newBlue)
     }
 
     override fun getAllColors(): Flow<List<PixColor>> {
@@ -138,19 +113,23 @@ class DefaultPixRepository(
     }
 
     // Entry Operations --------------------------------------------------
-    override suspend fun createEntry(listId: Long, categoryId: Long, date: PixDate): Long {
-        val entity = PixEntryEntity(
+    override suspend fun createEntry(listId: Long, categoryId: Long, date: LocalDate): Long {
+        return dao.upsertEntry(PixEntryEntity(
             listId = listId,
-            date = date.toString(),  // Using the PixDate.toString() format ("MM-dd")
+            date = date,
             categoryId = categoryId
-        )
-        return dao.upsertEntry(entity)
+        ))
     }
 
-    override suspend fun deleteEntry(listId: Long, date: PixDate) {
-        val entries = dao.getEntriesForList(listId).first()
-        val entry = entries.firstOrNull { it.date == date.toString() }
-            ?: throw IllegalArgumentException("Entry for date $date not found in list $listId")
-        dao.deleteEntry(entry)
+    override suspend fun setEntry(listId: Long, categoryId: Long, date: LocalDate): Long {
+        return dao.upsertEntry(PixEntryEntity(
+            listId = listId,
+            date = date,
+            categoryId = categoryId
+        ))
+    }
+
+    override suspend fun deleteEntry(listId: Long, date: LocalDate) {
+        dao.deleteEntryByListIdAndDate(listId, date)
     }
 }

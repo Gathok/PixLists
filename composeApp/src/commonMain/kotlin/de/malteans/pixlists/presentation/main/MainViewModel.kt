@@ -3,7 +3,7 @@ package de.malteans.pixlists.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.malteans.pixlists.domain.PixRepository
-import de.malteans.pixlists.util.Screen
+import de.malteans.pixlists.presentation.main.components.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine

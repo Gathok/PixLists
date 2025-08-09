@@ -1,4 +1,4 @@
-package de.malteans.pixlists.util
+package de.malteans.pixlists.domain
 
 enum class Months {
     JANUARY,

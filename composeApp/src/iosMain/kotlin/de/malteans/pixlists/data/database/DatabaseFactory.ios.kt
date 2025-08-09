@@ -2,6 +2,7 @@ package de.malteans.pixlists.data.database
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import de.malteans.pixlists.data.database.migration.MIGRATION1_2
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -14,6 +15,9 @@ actual class DatabaseFactory {
         return Room.databaseBuilder<PixDatabase>(
             name = dbFilePath,
         )
+            .addMigrations(
+                PixDatabase.Companion.MIGRATION1_2,
+            )
     }
 
     private fun documentDirectory(): String {

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.datetime.LocalDate
 
 @Entity(
     foreignKeys = [
@@ -26,8 +27,9 @@ import androidx.room.PrimaryKey
     ]
 )
 data class PixEntryEntity (
-    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0L,
     val listId: Long,
     val categoryId: Long,
-    val date: String = "",
+    val date: LocalDate,
 )
